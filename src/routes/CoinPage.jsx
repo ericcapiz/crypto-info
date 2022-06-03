@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Sparklines, SparklinesLine } from "react-sparklines";
 import { FaTwitter, FaFacebook, FaReddit, FaGithub } from "react-icons/fa";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 import DOMPurify from "dompurify";
 
 const CoinPage = () => {
   const [coin, setCoin] = useState({});
-  const url =
-    "https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&sparkline=true";
+  const params = useParams();
+
+  const url = `https://api.coingecko.com/api/v3/coins/${params.coinId}?localization=false&sparkline=true`;
 
   useEffect(() => {
     axios.get(url).then((res) => {
