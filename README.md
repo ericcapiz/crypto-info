@@ -1,7 +1,7 @@
 # Crypto-Info
 
-![Project Image](https://i.ibb.co/BL2C9rs/c2.png)
 ![Project Image](https://i.ibb.co/NYFQJhX/c.png)
+![Project Image](https://i.ibb.co/BL2C9rs/c2.png)
 
 ---
 
