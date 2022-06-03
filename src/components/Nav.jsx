@@ -1,13 +1,25 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import ThemeToggle from "./ThemeToggle";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+import { UserAuth } from "../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 
 const Nav = () => {
   const [nav, setNav] = useState(false);
+  const { user, logout } = UserAuth();
+  const navigate = useNavigate();
 
   const handleNav = () => {
     setNav(!nav);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (e) {
+      console.log(e.message);
+    }
   };
 
   return (
@@ -18,17 +30,26 @@ const Nav = () => {
       <div className="hidden md:block">
         <ThemeToggle />
       </div>
-      <div className="hidden md:block">
-        <Link to="/login" className="p-4 hover:text-accent">
-          Login
-        </Link>
-        <Link
-          to="/register"
-          className="bg-button text-btnText px-5 py-2 ml-2 rounded-2xl shadow-lg hover:shadow-2xl"
-        >
-          Register
-        </Link>
-      </div>
+      {user?.email ? (
+        <div className="hidden md:block">
+          <Link to="/account" className="p-4">
+            Account
+          </Link>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      ) : (
+        <div className="hidden md:block">
+          <Link to="/login" className="p-4 hover:text-accent">
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="bg-button text-btnText px-5 py-2 ml-2 rounded-2xl shadow-lg hover:shadow-2xl"
+          >
+            Register
+          </Link>
+        </div>
+      )}
       <div className="block md:hidden cursor-pointer z-10" onClick={handleNav}>
         {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
       </div>
@@ -40,28 +61,32 @@ const Nav = () => {
         }
       >
         <ul className="w-full p-4">
-          <li className="border-b py-6">
+          <li className="border-b py-6" onClick={handleNav}>
             <Link to="/">Home</Link>
           </li>
-          <li className="border-b py-6">
-            <Link to="/">Account</Link>
-          </li>
+          {!user ? (
+            <>
+              <li className="border-b py-6" onClick={handleNav}>
+                <Link to="/login">Login</Link>
+              </li>
+              <li className="border-b py-6" onClick={handleNav}>
+                <Link to="/register">Register</Link>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="border-b py-6" onClick={handleNav}>
+                <Link to="/account">Account</Link>
+              </li>
+              <li className="border-b py-6" onClick={handleNav}>
+                <p onClick={handleLogout}>Logout</p>
+              </li>
+            </>
+          )}
           <li className="py-6">
             <ThemeToggle />
           </li>
         </ul>
-        <div className="flex flex-col w-full p-4">
-          <Link to="/login">
-            <button className="w-full my-2 p-3 bg-primary text-primary border border-secondary rounded-2xl shadow-xl">
-              Login
-            </button>
-          </Link>
-          <Link to="/register">
-            <button className="w-full my-2 p-3 bg-button text-btnText rounded-2xl shadow-xl">
-              Register
-            </button>
-          </Link>
-        </div>
       </div>
     </div>
   );

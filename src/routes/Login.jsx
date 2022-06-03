@@ -1,24 +1,22 @@
 import React, { useState } from "react";
-import { AiOutlineMail, AiFillLock } from "react-icons/ai";
+import { AiFillLock, AiOutlineMail } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
-import { login, UserAuth } from "../context/AuthContext";
+import { UserAuth } from "../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = UserAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+
     try {
       await login(email, password);
       navigate("/account");
     } catch (e) {
-      setError(e.message);
-      console.log(e.message);
+      alert("Invalid Credentials");
     }
   };
 

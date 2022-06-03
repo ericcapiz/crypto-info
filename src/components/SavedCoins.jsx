@@ -1,12 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineClose } from "react-icons/ai";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { UserAuth } from "../context/AuthContext";
 
 const SavedCoins = () => {
   const [coins, setCoins] = useState([]);
+  const { user } = UserAuth();
+
+  useEffect(() => {
+    onSnapshot(doc(db, "users", `${user?.email}`), (doc) => {
+      setCoins(doc.data()?.watchList);
+    });
+  }, [user?.email]);
+
+  const coinPath = doc(db, "users", `${user?.email}`);
+  const deleteCoin = async (passedid) => {
+    try {
+      const result = coins.filter((item) => item.id !== passedid);
+      await updateDoc(coinPath, {
+        watchList: result,
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
   return (
     <div>
-      {coins.length === 0 ? (
+      {coins?.length === 0 ? (
         <p>
           No coins marked as favorite. On the home page, click on the star
           symbol next to each crypto to mark them as your favorite.{" "}
@@ -24,7 +47,7 @@ const SavedCoins = () => {
             </tr>
           </thead>
           <tbody>
-            {coins.map((coin) => (
+            {coins?.map((coin) => (
               <tr className="h-[60px] overflow-hidden" key={coin.id}>
                 <td>{coin?.rank}</td>
                 <td>
@@ -32,7 +55,7 @@ const SavedCoins = () => {
                     <div className="flex items-center">
                       <img
                         className="w-8 mr-4"
-                        src={coin?.img}
+                        src={coin?.image}
                         alt={coin.name}
                       />
                       <div>
@@ -45,7 +68,10 @@ const SavedCoins = () => {
                   </Link>
                 </td>
                 <td className="pl-8">
-                  <AiOutlineClose className="cursor-pointer" />
+                  <AiOutlineClose
+                    onClick={() => deleteCoin(coin.id)}
+                    className="cursor-pointer"
+                  />
                 </td>
               </tr>
             ))}
